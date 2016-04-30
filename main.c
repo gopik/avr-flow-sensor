@@ -7,29 +7,50 @@
  * 480 L/H - 65.5Hz - 491.25 
  * 600 L/H - 82  Hz - 492
  * 720 L/H - 90.2Hz - 451
+ **/
 #include "main.h" 
 
 // -------- Global Variables --------- //
 
 // -------- Functions --------- //
 
+static inline void initTimer() {
+	TCCR1B |= (1 << WGM12);
+	TIMSK |= (1 << OCIE1A);
+	TCCR1B |= (1 << CS01 | 1 << CS00);
+	OCR1A = 60000;
+}
+
+int x;
+int pulse_count = 0;
+ISR(TIMER1_COMPA_vect) {
+	if (x > 5) {
+		printWord(pulse_count);
+		x = 0;
+	}
+	x = x+1;
+}
+
+ISR(INT0_vect) {
+	pulse_count += 1;
+}
+
+void initPinInterrupt() {
+	GICR |= (1 << INT0);
+	MCUCR |= (1 << ISC11);
+}
+
 int main(void) {
   // -------- Inits --------- //
   
   // clock_prescale_set(clock_div_1);                 /* CPU Clock: 8 MHz */
   initUSART();
-  printString("OK");
+  initTimer();
+  //initPinIntInterrupt();
 
   // ------ Event loop ------ //
+  sei();
   while (1) {
-  printString("OK");
-	  _delay_us(1000000);
-  printString("OK");
-	  _delay_us(1000000);
-  printString("OK");
-	  _delay_us(1000000);
-  printString("OK");
-	  _delay_us(1000000);
   }                                                  /* End event loop */
   return (0);                            /* This line is never reached */
 }
