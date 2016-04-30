@@ -31,12 +31,16 @@ ISR(TIMER1_COMPA_vect) {
 	x = x+1;
 }
 
-ISR(INT0_vect) {
+ISR(INT1_vect) {
 	pulse_count += 1;
 }
 
 void initPinInterrupt() {
-	GICR |= (1 << INT0);
+	DDRD &= ~(1 << DDD2);     // Clear the PD2 pin
+	    // PD2 (INT0 pin) is now an input
+	PORTD |= (1 << PORTD2);    // turn On the Pull-up
+	//         // PD0 is now an input with pull-up enabled
+	GICR |= (1 << INT1);
 	MCUCR |= (1 << ISC11);
 }
 
@@ -46,11 +50,13 @@ int main(void) {
   // clock_prescale_set(clock_div_1);                 /* CPU Clock: 8 MHz */
   initUSART();
   initTimer();
-  //initPinIntInterrupt();
+  initPinInterrupt();
 
   // ------ Event loop ------ //
   sei();
   while (1) {
+	  printWord(pulse_count);
+	  _delay_ms(2000);
   }                                                  /* End event loop */
   return (0);                            /* This line is never reached */
 }
