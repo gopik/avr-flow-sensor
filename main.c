@@ -14,9 +14,14 @@ int main(void) {
 
   // ------ Event loop ------ //
   while (1) {
-
-
-
+  printString("OK");
+	  _delay_us(1000000);
+  printString("OK");
+	  _delay_us(1000000);
+  printString("OK");
+	  _delay_us(1000000);
+  printString("OK");
+	  _delay_us(1000000);
   }                                                  /* End event loop */
   return (0);                            /* This line is never reached */
 }
