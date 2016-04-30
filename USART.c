@@ -20,6 +20,24 @@
 #include "USART.h"
 #include <util/setbaud.h>
 
+#if defined(__AVR_ATmega8__)
+#define UBRR0H UBRRH
+#define UBRR0L UBRRL
+#define UCSR0A UCSRA
+#define UCSR0B UCSRB
+#define UCSR0C UCSRC
+#define UCSZ00 UCSZ0
+#define UDRE0 UDRE
+#define RXEN0 RXEN
+#define RXC0 RXC
+#define UDR0 UDR
+#define U2X0 U2X
+#define TXEN0 TXEN
+#define UCSZ00 UCSZ0
+#define UCSZ01 UCSZ1
+#endif
+
+
 void initUSART(void) {                                /* requires BAUD */
   UBRR0H = UBRRH_VALUE;                        /* defined in setbaud.h */
   UBRR0L = UBRRL_VALUE;
