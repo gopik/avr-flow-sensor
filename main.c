@@ -55,7 +55,7 @@ int main(void) {
   // ------ Event loop ------ //
   sei();
   while (1) {
-	  printWord(pulse_count);
+	  // printWord(pulse_count);
 	  _delay_ms(2000);
   }                                                  /* End event loop */
   return (0);                            /* This line is never reached */
