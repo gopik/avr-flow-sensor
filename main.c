@@ -1,3 +1,5 @@
+#include "main.h" 
+
 /**
  * YF-21 flow sensor specifications
  *
@@ -12,8 +14,11 @@
  * In one second pulse_count == frequency
  * Liters in one second given pulse count = p
  * p pulses => (62*p^2 + 15*p + 95756)*10^-7 liters
+ *
+ *
+ * Multiply the coefficients by 10^7 to retain precision without
+ * using floating points. Hence the result will be in 10^-7 liters
  **/
-#include "main.h" 
 
 // -------- Global Variables --------- //
 
@@ -27,7 +32,6 @@ int tmp_hi_precision_count;
 static inline void init_timer() {
 	TIMSK |= (1 << TOIE0); // Enable interrupt on TIMER0 overflow
 }
-
 
 static void per_second_callback() {
 	int frequency = pulse_count;
