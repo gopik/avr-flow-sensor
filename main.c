@@ -19,13 +19,34 @@
 
 int timer0_overflow_count;
 int pulse_count = 0;
-// -------- Functions --------- //
+int liters;
+int tmp_hi_precision_count;
 
-void per_second_callback();
+// -------- Functions --------- //
 
 static inline void init_timer() {
 	TIMSK |= (1 << TOIE0); // Enable interrupt on TIMER0 overflow
 }
+
+
+static void per_second_callback() {
+	int frequency = pulse_count;
+	pulse_count = 0;
+	tmp_hi_precision_count += 62*frequency*frequency + 15*frequency + 95756;
+	liters += (tmp_hi_precision_count / 10000000);
+	tmp_hi_precision_count %= 10000000;
+}
+
+static void initExternalInterrupt() {
+	DDRD &= ~(1 << DDD2);     // Clear the PD2 pin
+	// PD2 (INT0 pin) is now an input
+	PORTD |= (1 << PORTD2);    // turn On the Pull-up
+	// PD0 is now an input with pull-up enabled
+	GICR |= (1 << INT1);
+	MCUCR |= (1 << ISC11);
+}
+
+// -------- ISRs --------------------//
 
 ISR(TIMER0_OVF_vect) {
 	// On 8 MHz clock, 1 sec = 31250 * 256 => 31250 overflows of timer0
@@ -36,28 +57,8 @@ ISR(TIMER0_OVF_vect) {
 	}
 }
 
-int liters;
-int tmp_hi_precision_count;
-
-void per_second_callback() {
-	int frequency = pulse_count;
-	pulse_count = 0;
-	tmp_hi_precision_count += 62*frequency*frequency + 15*frequency + 95756;
-	liters += (tmp_hi_precision_count / 10000000);
-	tmp_hi_precision_count %= 10000000;
-}
-
 ISR(INT1_vect) {
 	pulse_count += 1;
-}
-
-void initExternalInterrupt() {
-	DDRD &= ~(1 << DDD2);     // Clear the PD2 pin
-	    // PD2 (INT0 pin) is now an input
-	PORTD |= (1 << PORTD2);    // turn On the Pull-up
-	//         // PD0 is now an input with pull-up enabled
-	GICR |= (1 << INT1);
-	MCUCR |= (1 << ISC11);
 }
 
 int main(void) {
