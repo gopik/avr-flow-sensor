@@ -7,35 +7,47 @@
  * 480 L/H - 65.5Hz - 491.25 
  * 600 L/H - 82  Hz - 492
  * 720 L/H - 90.2Hz - 451
+ * p pulses => (62*p^2 + 15*p + 95756)*10^-7 liters
  **/
 #include "main.h" 
 
 // -------- Global Variables --------- //
 
+int timer0_overflow_count;
+int pulse_count = 0;
 // -------- Functions --------- //
 
-static inline void initTimer() {
-	TCCR1B |= (1 << WGM12);
-	TIMSK |= (1 << OCIE1A);
-	TCCR1B |= (1 << CS01 | 1 << CS00);
-	OCR1A = 60000;
+void per_second_callback();
+
+static inline void init_timer() {
+	TIMSK |= (1 << TOIE0); // Enable interrupt on TIMER0 overflow
 }
 
-int x;
-int pulse_count = 0;
-ISR(TIMER1_COMPA_vect) {
-	if (x > 5) {
-		printWord(pulse_count);
-		x = 0;
+ISR(TIMER0_OVF_vect) {
+	// On 8 MHz clock, 1 sec = 31250 * 256 => 31250 overflows of timer0
+	timer0_overflow_count += 1;
+	if (timer0_overflow_count == 31250) {
+		timer0_overflow_count = 0;
+		per_second_callback();
 	}
-	x = x+1;
+}
+
+int liters;
+int tmp_hi_precision_count;
+
+void per_second_callback() {
+	int frequency = pulse_count;
+	pulse_count = 0;
+	tmp_hi_precision_count += 62*frequency*frequency + 15*frequency + 95756;
+	liters += (tmp_hi_precision_count / 10000000);
+	tmp_hi_precision_count %= 10000000;
 }
 
 ISR(INT1_vect) {
 	pulse_count += 1;
 }
 
-void initPinInterrupt() {
+void initExternalInterrupt() {
 	DDRD &= ~(1 << DDD2);     // Clear the PD2 pin
 	    // PD2 (INT0 pin) is now an input
 	PORTD |= (1 << PORTD2);    // turn On the Pull-up
@@ -49,14 +61,12 @@ int main(void) {
   
   // clock_prescale_set(clock_div_1);                 /* CPU Clock: 8 MHz */
   initUSART();
-  initTimer();
-  initPinInterrupt();
+  init_timer();
+  initExternalInterrupt();
 
   // ------ Event loop ------ //
   sei();
   while (1) {
-	  // printWord(pulse_count);
-	  _delay_ms(2000);
   }                                                  /* End event loop */
   return (0);                            /* This line is never reached */
 }
