@@ -7,6 +7,10 @@
  * 480 L/H - 65.5Hz - 491.25 
  * 600 L/H - 82  Hz - 492
  * 720 L/H - 90.2Hz - 451
+ *
+ * Fittng a quadratic curve using above data:
+ * In one second pulse_count == frequency
+ * Liters in one second given pulse count = p
  * p pulses => (62*p^2 + 15*p + 95756)*10^-7 liters
  **/
 #include "main.h" 
