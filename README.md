@@ -2,4 +2,4 @@
 2. CoolTerm
 3. Right click, Cmd Open to avoid security restrictions
 4. BAUDRATE 300
-5. Timers on ATMEGA8 microcontroller.
+6. http://www.electroschematics.com/12145/working-with-water-flow-sensors-arduino/ - Flow rate and liter computation 
