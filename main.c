@@ -9,15 +9,6 @@
  * 480 L/H - 65.5Hz - 491.25 
  * 600 L/H - 82  Hz - 492
  * 720 L/H - 90.2Hz - 451
- *
- * Fittng a quadratic curve using above data:
- * In one second pulse_count == frequency
- * Liters in one second given pulse count = p
- * p pulses => (62*p^2 + 14895*p + 95756)*10^-7 liters
- *
- *
- * Multiply the coefficients by 10^7 to retain precision without
- * using floating points. Hence the result will be in 10^-7 liters
  **/
 
 // -------- Global Variables --------- //
@@ -27,7 +18,6 @@ int pulse_count = 0;
 int total_pulse_count = 0;
 int num_seconds = 0;
 volatile int liters;
-unsigned long tmp_hi_precision_count;
 
 // -------- Functions --------- //
 
@@ -37,23 +27,17 @@ static inline void init_timer() {
 }
 
 static void per_second_callback() {
-	int frequency = pulse_count;
-	if (pulse_count > 0) {
-		num_seconds += 1;
-		tmp_hi_precision_count += (62*frequency*frequency + 14895*frequency + 95756);
-		pulse_count = 0;
-		liters += (tmp_hi_precision_count / 10000000);
-		tmp_hi_precision_count %= 10000000;
-	}
+	liters += (pulse_count/450);
+	pulse_count %= 450;
 }
 
 static void initExternalInterrupt() {
-	DDRD &= ~(1 << DDD2);     // Clear the PD2 pin
+	DDRD &= ~(1 << DD3);     // Clear the PD2 pin
 	// PD2 (INT0 pin) is now an input
-	PORTD |= (1 << PORTD2);    // turn On the Pull-up
+	PORTD |= (1 << PIN3);    // turn On the Pull-up
 	// PD0 is now an input with pull-up enabled
 	GICR |= (1 << INT1);
-	MCUCR |= (1 << ISC11);
+	MCUCR |= (1 << ISC10 | 1 << ISC11);
 }
 
 // -------- ISRs --------------------//
