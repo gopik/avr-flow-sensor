@@ -32,12 +32,12 @@ static void per_second_callback() {
 }
 
 static void initExternalInterrupt() {
-	DDRD &= ~(1 << DD3);     // Clear the PD2 pin
+	DDRD &= ~(1 << DD2);     // Clear the PD2 pin
 	// PD2 (INT0 pin) is now an input
-	PORTD |= (1 << PIN3);    // turn On the Pull-up
+	PORTD |= (1 << PIN2);    // turn On the Pull-up
 	// PD0 is now an input with pull-up enabled
-	GICR |= (1 << INT1);
-	MCUCR |= (1 << ISC10 | 1 << ISC11);
+	GICR |= (1 << INT0);
+	MCUCR |= (1 << ISC00 | 1 << ISC01);
 }
 
 // -------- ISRs --------------------//
@@ -51,7 +51,7 @@ ISR(TIMER0_OVF_vect) {
 	}
 }
 
-ISR(INT1_vect) {
+ISR(INT0_vect) {
 	pulse_count += 1;
 	total_pulse_count += 1;
 }
