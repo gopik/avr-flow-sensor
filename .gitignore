@@ -10,3 +10,4 @@
 *.map
 *~
 *.eeprom
+build/

@@ -1,0 +1,17 @@
+package telemetry;
+
+message SensorData {
+	optional int64 time_start = 1;
+	optional int64 time_end = 2;
+	repeated int64 value = 3;
+	optional int32 unit_type = 4;
+}
+
+message SensorObservation {
+	enum SensorType {
+		WATER_METER = 1;
+	}
+	optional int64 sensor_id = 1;
+	optional SensorType type = 2;
+	optional SensorData data = 3;
+}
