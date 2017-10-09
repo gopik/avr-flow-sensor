@@ -9,8 +9,8 @@ SET(CWARN "-Wall -Wstrict-prototypes")
 SET(CTUNING "-funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums")
 SET(COPT "-Os")
 SET(CINCS "-I${Candi_SOURCE_DIR}/libarduino")
-SET(CMCU "-mmcu=atmega168")
-SET(CDEFS "-DF_CPU=16000000")
+#SET(CMCU "-mmcu=atmega168")
+#SET(CDEFS "-DF_CPU=16000000")
 
 
 SET(CFLAGS "${CMCU} ${CDEBUG} ${CDEFS} ${CINCS} ${COPT} ${CWARN} ${CSTANDARD} ${CEXTRA}")
